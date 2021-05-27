@@ -2,6 +2,7 @@ package cn.edu.zucc.practiceSystem.DAO;
 
 import cn.edu.zucc.practiceSystem.entity.AdminEntity;
 import cn.edu.zucc.practiceSystem.entity.TeacherEntity;
+import cn.edu.zucc.practiceSystem.result.StudentSatausResult;
 import org.bouncycastle.asn1.x509.Time;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public interface AdminDao extends JpaRepository<AdminEntity,Long>, JpaSpecificationExecutor<AdminEntity> {
 //  通过adminName查询管理员
@@ -42,4 +44,21 @@ public interface AdminDao extends JpaRepository<AdminEntity,Long>, JpaSpecificat
     @Query(value = "UPDATE teacher SET teacher_id = ?,teacher_passwd = ?," +
             "teacher_name = ?,delete_flag = ? WHERE t_id = ?",nativeQuery = true)
     void modifyTeacher(String teacherId,String teacherPasswd,String teacherName,int flag,int tId);
+
+    @Modifying
+    @Query(value = "SELECT student.s_id,student.student_id,student.student_name,student.student_class,\n" +
+            "grade.teacher_id,student.student_teacher,student.student_workplace,\n" +
+            "student.student_Internship,student.strat_time,student.end_time,\n" +
+            "student.remark,grade.student_grade,grade.grade_time\n" +
+            "FROM student LEFT JOIN grade\n" +
+            "ON student.student_id = grade.student_id\n" +
+            "WHERE student.student_name LIKE \"%?%\"\n" +
+            "LIMIT ?,?",nativeQuery = true)
+    List<Object> listStudentStatus(String studentName, int start, int end);
+
+    @Modifying
+    @Query(value = "SELECT COUNT(1)\n" +
+            "FROM student LEFT JOIN grade\n" +
+            "ON student.student_id = grade.student_id",nativeQuery = true)
+    int countStudentStates();
 }

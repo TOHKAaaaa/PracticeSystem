@@ -25,6 +25,11 @@ public class AppraisalFormServiceImpl implements AppraisalFormService {
     }
 
     @Override
+    public AppraisalFormEntity findById(int id) {
+        return appraisalFormDao.findById(id);
+    }
+
+    @Override
     public void insertNewAppraisalForm(AppraisalFormEntity appraisalFormEntity) {
         appraisalFormDao.insertNewAppraisalForm(appraisalFormEntity.getStudentId(),appraisalFormEntity.getStudentName(),
                 appraisalFormEntity.getAppraisalForm(),appraisalFormEntity.getAppraisalFormState(),appraisalFormEntity.getTeacherId(),
@@ -38,6 +43,12 @@ public class AppraisalFormServiceImpl implements AppraisalFormService {
     }
 
     @Override
+    public Page<AppraisalFormEntity> findByStudentIdContainingAndDeleteFlag(int index, int size, String studentId) {
+        Pageable pageable = PageRequest.of(index,size);
+        return appraisalFormDao.findByStudentIdContainingAndDeleteFlag(studentId,pageable,0);
+    }
+
+    @Override
     public void updateByStudentId(int appraisalFormState, String teacherId, String studentId) {
         appraisalFormDao.updateByStudentId(appraisalFormState,teacherId,studentId);
     }
@@ -48,7 +59,7 @@ public class AppraisalFormServiceImpl implements AppraisalFormService {
     }
 
     @Override
-    public void updateAppraisalForm(String appraisalForm, int appraisalFormState, int id) {
+    public void updateAppraisalForm(String appraisalForm, String appraisalFormState, int id) {
         appraisalFormDao.updateAppraisalForm(appraisalForm,appraisalFormState,id);
     }
 }

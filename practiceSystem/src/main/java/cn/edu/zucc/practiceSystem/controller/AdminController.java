@@ -45,6 +45,8 @@ public class AdminController {
     TripleAgreementService tripleAgreementService;
     @Autowired
     StudentLogService studentLogService;
+    @Autowired
+    AppraisalFormService appraisalFormService;
 
     @ApiOperation("管理员查看所有公司（包含未审核的）")
     @RequestMapping(value = "/listallcompany",method = RequestMethod.GET)
@@ -430,7 +432,7 @@ public class AdminController {
 
     @ApiOperation("管理员显示学生实习日志（不含删除）")
     @RequestMapping(value = "/adminListLog",method = RequestMethod.GET)
-    public ResponseData teacherListLog(HttpServletRequest httpServletRequest,@RequestParam String studentId,
+    public ResponseData adminListLog(HttpServletRequest httpServletRequest,@RequestParam String studentId,
                                        @RequestParam Integer pageIndex,@RequestParam Integer pageSize){
         String token = httpServletRequest.getHeader("token");
         if(!JwtUtil.verity(token))
@@ -447,7 +449,7 @@ public class AdminController {
 
     @ApiOperation("管理员查看所有被删除的学生日志")
     @RequestMapping(value = "/adminListDeletedLog",method = RequestMethod.GET)
-    public ResponseData teacherListDeletedLog(HttpServletRequest httpServletRequest,@RequestParam String studentId,
+    public ResponseData adminListDeletedLog(HttpServletRequest httpServletRequest,@RequestParam String studentId,
                                               @RequestParam Integer pageIndex,@RequestParam Integer pageSize){
         String token = httpServletRequest.getHeader("token");
         if(!JwtUtil.verity(token))
@@ -464,7 +466,7 @@ public class AdminController {
 
     @ApiOperation("管理员查看指定学生日志")
     @RequestMapping(value = "/adminEditLog",method = RequestMethod.GET)
-    public ResponseData teacherEditLog(HttpServletRequest httpServletRequest, @RequestParam int id){
+    public ResponseData adminEditLog(HttpServletRequest httpServletRequest, @RequestParam int id){
         String token = httpServletRequest.getHeader("token");
         if(!JwtUtil.verity(token))
             return new ResponseData(ExceptionMsg.TOKENFAILED,null);
@@ -481,7 +483,7 @@ public class AdminController {
 
     @ApiOperation("管理员删除学生实习日志")
     @RequestMapping(value = "/adminDeleteLog",method = RequestMethod.GET)
-    public ResponseData teacherDeleteLog(HttpServletRequest httpServletRequest,@RequestParam int id){
+    public ResponseData adminDeleteLog(HttpServletRequest httpServletRequest,@RequestParam int id){
         String token = httpServletRequest.getHeader("token");
         if(!JwtUtil.verity(token))
             return new ResponseData(ExceptionMsg.TOKENFAILED,null);
@@ -498,7 +500,7 @@ public class AdminController {
 
     @ApiOperation("管理员恢复被删除的日志")
     @RequestMapping(value = "/adminReductLog",method = RequestMethod.GET)
-    public ResponseData teacherReductLog(HttpServletRequest httpServletRequest,@RequestParam int id){
+    public ResponseData adminReductLog(HttpServletRequest httpServletRequest,@RequestParam int id){
         String token = httpServletRequest.getHeader("token");
         if(!JwtUtil.verity(token))
             return new ResponseData(ExceptionMsg.TOKENFAILED,null);
@@ -507,6 +509,44 @@ public class AdminController {
                 return new ResponseData(ExceptionMsg.PERMISSION,null);
             studentLogService.reductLog(id);
             return new ResponseData(ExceptionMsg.SUCCESS,null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseData(ExceptionMsg.FAILED,null);
+    }
+
+    @ApiOperation("管理员查看学生实习鉴定表")
+    @RequestMapping(value = "/adminListAppraisalForm",method = RequestMethod.GET)
+    public ResponseData adminListAppraisalForm(HttpServletRequest httpServletRequest,@RequestParam String studentId,
+                                                 @RequestParam Integer pageIndex,@RequestParam Integer pageSize) {
+        String token = httpServletRequest.getHeader("token");
+        if (!JwtUtil.verity(token))
+            return new ResponseData(ExceptionMsg.TOKENFAILED, null);
+        try {
+            if (JwtUtil.verifyToken(token).get("role").asInt() != 3)
+                return new ResponseData(ExceptionMsg.PERMISSION, null);
+//            TeacherEntity teacherEntity = teacherService.FindBytId(JwtUtil.verifyToken(token).get("userid").asInt());
+            return new ResponseData(ExceptionMsg.SUCCESS, appraisalFormService.findByStudentIdContainingAndDeleteFlag(pageIndex,pageSize,studentId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseData(ExceptionMsg.FAILED, null);
+    }
+
+    @ApiOperation("管理员查看学生当前信息")
+    @RequestMapping(value = "/adminListStudentStates",method = RequestMethod.GET)
+    public ResponseData adminListStudentStates(HttpServletRequest httpServletRequest,@RequestParam String studentName,
+                                               @RequestParam Integer pageIndex,@RequestParam Integer pageSize){
+        String token = httpServletRequest.getHeader("token");
+        if (!JwtUtil.verity(token))
+            return new ResponseData(ExceptionMsg.TOKENFAILED, null);
+        try {
+            if (JwtUtil.verifyToken(token).get("role").asInt() != 3)
+                return new ResponseData(ExceptionMsg.PERMISSION, null);
+            JSONObject jsonObject =new JSONObject();
+            jsonObject.put("result",adminService.listStudentStatus(studentName,pageIndex,pageSize));
+            jsonObject.put("totalSize",adminService.countStudentStates());
+            return new ResponseData(ExceptionMsg.SUCCESS,jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
         }

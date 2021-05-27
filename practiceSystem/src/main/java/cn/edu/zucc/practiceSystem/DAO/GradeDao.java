@@ -11,6 +11,8 @@ public interface GradeDao extends JpaRepository<GradeEntity,Long>,JpaSpecificati
     GradeEntity findBygId(int id);
 
     @Modifying
-    @Query(value = "UPDATE grade SET student_grade = ? AND grade_time = NOW() WHERE g_id = ?",nativeQuery = true)
-    void score(int score,int id);
+    @Query(value = "INSERT INTO grade(student_id,student_name,teacher_id,teacher_name,student_grade,\n" +
+            "grade_time,delete_flag)\n" +
+            "VALUES(?,?,?,?,?,NOW(),?)",nativeQuery = true)
+    void score(String studentId,String studentName,String teacherId,String teacherName,int studentGrade,int flag);
 }

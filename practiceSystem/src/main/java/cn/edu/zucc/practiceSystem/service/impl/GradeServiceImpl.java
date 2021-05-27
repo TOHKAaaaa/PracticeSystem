@@ -17,8 +17,8 @@ public class GradeServiceImpl implements GradeService {
     }
 
     @Override
-    public void score(int score, int id) {
-        gradeDao.score(score,id);
+    public void score(String studentId,String studentName,String teacherId,String teacherName,int studentGrade) {
+        gradeDao.score(studentId,studentName,teacherId,teacherName,studentGrade,0);
     }
 
     @Override

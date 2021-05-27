@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface AppraisalFormDao extends JpaRepository<AppraisalFormEntity,Long>, JpaSpecificationExecutor<AppraisalFormEntity> {
     AppraisalFormEntity findByStudentIdAndDeleteFlag(String studentId,int flag);
     AppraisalFormEntity findByStudentId(String studentId);
+    AppraisalFormEntity findById(int id);
 
     @Modifying
     @Query(value = "INSERT INTO appraisal_form(student_id,student_name,appraisal_form,appraisal_form_state,\n" +
@@ -21,16 +22,17 @@ public interface AppraisalFormDao extends JpaRepository<AppraisalFormEntity,Long
                                 String teacherId,String teacherName,int flag);
 
     Page<AppraisalFormEntity> findByStudentIdContainingAndTeacherIdAndDeleteFlag(String studentId, String teacherId, int flag, Pageable pageable);
+    Page<AppraisalFormEntity> findByStudentIdContainingAndDeleteFlag(String studentId,Pageable pageable,int flag);
 
     @Modifying
     @Query(value = "UPDATE appraisal_form SET appraisal_form_state = ? WHERE teacher_id = ? AND student_id = ? AND delete_flag = 0",nativeQuery = true)
     void updateByStudentId(int appraisalFormState,String teacherId,String studentId);
 
     @Modifying
-    @Query(value = "UPDATE appraisal_form SET appraisal_form_state = 1 AND delete_flag = 1 WHERE id = ?",nativeQuery = true)
+    @Query(value = "UPDATE appraisal_form SET appraisal_form_state = '1'WHERE id = ?",nativeQuery = true)
     void refuseAppraisalForm(int id);
 
     @Modifying
     @Query(value = "UPDATE appraisal_form SET appraisal_form = ?,appraisal_form_state = ? WHERE id = ?",nativeQuery = true)
-    void updateAppraisalForm(String appraisalForm,int appraisalFormState,int id);
+    void updateAppraisalForm(String appraisalForm,String appraisalFormState,int id);
 }

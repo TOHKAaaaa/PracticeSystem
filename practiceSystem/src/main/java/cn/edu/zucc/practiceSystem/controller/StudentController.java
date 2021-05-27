@@ -61,8 +61,8 @@ public class StudentController {
             studentInfoResultEntity.setStudentName(studentEntity.getStudentName());
             studentInfoResultEntity.setStudentClass(studentEntity.getStudentClass());
             if(teacherEntity==null)
-                return new ResponseData(ExceptionMsg.SUCCESS,studentInfoResultEntity);
-            if(teacherEntity.getTeacherName()!=null)
+                studentInfoResultEntity.setStudentTeacher(null);
+            else
                 studentInfoResultEntity.setStudentTeacher(teacherEntity.getTeacherName());
             if(studentEntity.getStudentWorkplace()!=null)
                 studentInfoResultEntity.setStudentWorkplace(studentEntity.getStudentWorkplace());
@@ -71,6 +71,10 @@ public class StudentController {
 
             TripleAgreementEntity tripleAgreementEntity = tripleAgreementService.findByStudentId(studentEntity.getStudentId());
             studentInfoResultEntity.setTripleAgreement(tripleAgreementEntity != null);
+//            System.out.println("这是个测试行");
+//            System.out.println(studentInfoResultEntity.isTripleAgreement());
+//            System.out.println("测试结束");
+
 //            三方协议
 //            未上传:0 上传:2 通过:3 未通过:1 管理员通过:4
 //            studentInfoResultEntity
@@ -92,6 +96,7 @@ public class StudentController {
                 else
                     studentInfoResultEntity.setState(1);
             }
+//            System.out.println(tripleAgreementEntity.getState());
 
             int sum = studentLogService.StudentLogSum(studentEntity.getStudentId());
             studentInfoResultEntity.setStudentLog(sum >= 12);
@@ -154,7 +159,6 @@ public class StudentController {
             StudentEntity studentEntity = studentService.FindBySId(id);
             TeacherEntity teacherEntity = teacherService.FindBytId(practiceResultEntity.getTeacher());
             studentEntity.setRemark(practiceResultEntity.getStates());
-            studentEntity.setStudentTeacher(teacherEntity.getTeacherId());
             studentEntity.setStudentWorkplace(practiceResultEntity.getCompany());
             studentEntity.setStudentInternship(practiceResultEntity.getPosition());
             Timestamp time1 = Timestamp.valueOf(practiceResultEntity.getDate1());
@@ -164,7 +168,7 @@ public class StudentController {
             TripleAgreementEntity tripleAgreementEntity = new TripleAgreementEntity();
             tripleAgreementEntity.setStudentId(studentEntity.getStudentId());
             tripleAgreementEntity.setStudentName(studentEntity.getStudentName());
-            tripleAgreementEntity.setTeacherId(studentEntity.getStudentTeacher());
+            tripleAgreementEntity.setTeacherId(teacherEntity.getTeacherId());
             tripleAgreementEntity.setTeacherName(teacherEntity.getTeacherName());
             tripleAgreementEntity.setTripleAgreement(1);
             tripleAgreementEntity.setState("2");
@@ -343,11 +347,31 @@ public class StudentController {
                         result.setAppraisalForm(report);
                         result.setAppraisalFormState(0);
                         result.setDeleteFlag(0);
-                        appraisalFormService.updateAppraisalForm(result.getAppraisalForm(),result.getAppraisalFormState(),result.getId());
+                        appraisalFormService.updateAppraisalForm(result.getAppraisalForm(),String.valueOf(result.getAppraisalFormState()),result.getId());
                         return new ResponseData(ExceptionMsg.SUCCESS,null);
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseData(ExceptionMsg.FAILED,null);
+    }
+
+    @ApiOperation("学生查看自己上次提交的鉴定表")
+    @RequestMapping(value = "/listMyAppraisalForm",method = RequestMethod.GET)
+    public ResponseData listMyAppraisalForm(HttpServletRequest httpServletRequest){
+        String token = httpServletRequest.getHeader("token");
+        if(!JwtUtil.verity(token))
+            return new ResponseData(ExceptionMsg.TOKENFAILED,null);
+        try {
+            if(JwtUtil.verifyToken(token).get("role").asInt()!=1)
+                return new ResponseData(ExceptionMsg.PERMISSION,null);
+            StudentEntity studentEntity = studentService.FindBySId(JwtUtil.verifyToken(token).get("userid").asInt());
+            AppraisalFormEntity appraisalFormEntity = appraisalFormService.findByStudentIdAndDeleteFlag(studentEntity.getStudentId());
+            if(appraisalFormEntity==null)
+                return new ResponseData(ExceptionMsg.SUCCESS,null);
+            return new ResponseData(ExceptionMsg.SUCCESS,appraisalFormEntity.getAppraisalForm());
         } catch (Exception e) {
             e.printStackTrace();
         }

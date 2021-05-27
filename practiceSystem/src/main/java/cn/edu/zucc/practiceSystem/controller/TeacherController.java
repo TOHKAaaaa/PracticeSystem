@@ -111,6 +111,9 @@ public class TeacherController {
             if(JwtUtil.verifyToken(token).get("role").asInt()!=2)
                 return new ResponseData(ExceptionMsg.PERMISSION,null);
             tripleAgreementService.updateState("3",id);
+            TeacherEntity teacherEntity = teacherService.FindBytId(JwtUtil.verifyToken(token).get("userid").asInt());
+            StudentEntity studentEntity = studentService.findByStudentId(tripleAgreementService.findById(id).getStudentId());
+            studentEntity.setStudentTeacher(teacherEntity.getTeacherId());
             return new ResponseData(ExceptionMsg.SUCCESS,null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,10 +288,13 @@ public class TeacherController {
         try {
             if(JwtUtil.verifyToken(token).get("role").asInt()!=2)
                 return new ResponseData(ExceptionMsg.PERMISSION,null);
-            gradeService.score(score,id);
-            GradeEntity gradeEntity = gradeService.findByGId(id);
-            AppraisalFormEntity appraisalFormEntity = appraisalFormService.findByStudentIdAndDeleteFlag(gradeEntity.getStudentId());
+            AppraisalFormEntity appraisalFormEntity = appraisalFormService.findById(id);
             appraisalFormService.updateByStudentId(2,appraisalFormEntity.getTeacherId(),appraisalFormEntity.getStudentId());
+            GradeEntity gradeEntity = gradeService.findByStudentId(appraisalFormEntity.getStudentId());
+            if(gradeEntity!=null)
+                return new ResponseData(ExceptionMsg.FAILED,"不能重复打分");
+            gradeService.score(appraisalFormEntity.getStudentId(),appraisalFormEntity.getStudentName(),
+                    appraisalFormEntity.getTeacherId(),appraisalFormEntity.getTeacherName(),score);
             return new ResponseData(ExceptionMsg.SUCCESS,null);
         } catch (Exception e) {
             e.printStackTrace();

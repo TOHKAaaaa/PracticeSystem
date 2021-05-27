@@ -3,6 +3,9 @@ package cn.edu.zucc.practiceSystem.service;
 import cn.edu.zucc.practiceSystem.entity.AdminEntity;
 import cn.edu.zucc.practiceSystem.entity.StudentEntity;
 import cn.edu.zucc.practiceSystem.entity.TeacherEntity;
+import cn.edu.zucc.practiceSystem.result.StudentSatausResult;
+
+import java.util.List;
 
 public interface AdminService {
 //    管理员登录
@@ -13,4 +16,6 @@ public interface AdminService {
     public void insertTeacher(TeacherEntity teacherEntity);
     public void modifyStudent(StudentEntity studentEntity);
     public void modifyTeacher(TeacherEntity teacherEntity);
+    public List<StudentSatausResult> listStudentStatus(String studentName, int index, int size);
+    public int countStudentStates();
 }

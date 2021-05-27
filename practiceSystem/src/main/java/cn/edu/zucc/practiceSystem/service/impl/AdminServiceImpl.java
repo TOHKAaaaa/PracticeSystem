@@ -4,10 +4,15 @@ import cn.edu.zucc.practiceSystem.DAO.AdminDao;
 import cn.edu.zucc.practiceSystem.entity.AdminEntity;
 import cn.edu.zucc.practiceSystem.entity.StudentEntity;
 import cn.edu.zucc.practiceSystem.entity.TeacherEntity;
+import cn.edu.zucc.practiceSystem.result.StudentSatausResult;
 import cn.edu.zucc.practiceSystem.service.AdminService;
 import cn.edu.zucc.practiceSystem.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -69,5 +74,36 @@ public class AdminServiceImpl implements AdminService {
     public void modifyTeacher(TeacherEntity teacherEntity) {
         adminDao.modifyTeacher(teacherEntity.getTeacherId(),teacherEntity.getTeacherPasswd(),
                 teacherEntity.getTeacherName(),0,teacherEntity.gettId());
+    }
+
+    @Override
+    public List<StudentSatausResult> listStudentStatus(String studentName, int index, int size) {
+        int start = index * size;
+        int end = (index + 1) * size;
+        List<StudentSatausResult> result = new ArrayList<>();
+        List<Object> list = adminDao.listStudentStatus(studentName,start,end);
+        for (Object o:list){
+            Object[] rowArray = (Object[]) o;
+            StudentSatausResult studentSatausResult = new StudentSatausResult();
+            studentSatausResult.setsId((int)rowArray[0]);
+            studentSatausResult.setStudentId((String)rowArray[1]);
+            studentSatausResult.setStudentName((String)rowArray[2]);
+            studentSatausResult.setTeacherId((String)rowArray[3]);
+            studentSatausResult.setStudentTeacher((String)rowArray[4]);
+            studentSatausResult.setStudentWorkplace((String)rowArray[5]);
+            studentSatausResult.setStudentInternship((String)rowArray[6]);
+            studentSatausResult.setStartTime((Timestamp)rowArray[7]);
+            studentSatausResult.setEndTime((Timestamp)rowArray[8]);
+            studentSatausResult.setRemark((int)rowArray[9]);
+            studentSatausResult.setStudentGrade((int)rowArray[10]);
+            studentSatausResult.setGradeTime((Timestamp)rowArray[11]);
+            result.add(studentSatausResult);
+        }
+        return result;
+    }
+
+    @Override
+    public int countStudentStates() {
+        return adminDao.countStudentStates();
     }
 }
