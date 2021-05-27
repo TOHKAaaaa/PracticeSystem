@@ -54,7 +54,7 @@ public interface AdminDao extends JpaRepository<AdminEntity,Long>, JpaSpecificat
             "ON student.student_id = grade.student_id\n" +
             "WHERE student.student_name LIKE \"%?%\"\n" +
             "LIMIT ?,?",nativeQuery = true)
-    List<Object> listStudentStatus(String studentName, int start, int end);
+    List<StudentSatausResult> listStudentStatus(String studentName, int start, int end);
 
     @Modifying
     @Query(value = "SELECT COUNT(1)\n" +

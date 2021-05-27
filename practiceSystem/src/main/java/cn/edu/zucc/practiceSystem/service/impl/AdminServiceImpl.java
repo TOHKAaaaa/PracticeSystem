@@ -80,25 +80,7 @@ public class AdminServiceImpl implements AdminService {
     public List<StudentSatausResult> listStudentStatus(String studentName, int index, int size) {
         int start = index * size;
         int end = (index + 1) * size;
-        List<StudentSatausResult> result = new ArrayList<>();
-        List<Object> list = adminDao.listStudentStatus(studentName,start,end);
-        for (Object o:list){
-            Object[] rowArray = (Object[]) o;
-            StudentSatausResult studentSatausResult = new StudentSatausResult();
-            studentSatausResult.setsId((int)rowArray[0]);
-            studentSatausResult.setStudentId((String)rowArray[1]);
-            studentSatausResult.setStudentName((String)rowArray[2]);
-            studentSatausResult.setTeacherId((String)rowArray[3]);
-            studentSatausResult.setStudentTeacher((String)rowArray[4]);
-            studentSatausResult.setStudentWorkplace((String)rowArray[5]);
-            studentSatausResult.setStudentInternship((String)rowArray[6]);
-            studentSatausResult.setStartTime((Timestamp)rowArray[7]);
-            studentSatausResult.setEndTime((Timestamp)rowArray[8]);
-            studentSatausResult.setRemark((int)rowArray[9]);
-            studentSatausResult.setStudentGrade((int)rowArray[10]);
-            studentSatausResult.setGradeTime((Timestamp)rowArray[11]);
-            result.add(studentSatausResult);
-        }
+        List<StudentSatausResult> result = adminDao.listStudentStatus(studentName,start,end);
         return result;
     }
 

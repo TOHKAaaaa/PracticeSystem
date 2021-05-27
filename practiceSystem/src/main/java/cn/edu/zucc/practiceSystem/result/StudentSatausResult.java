@@ -1,7 +1,11 @@
 package cn.edu.zucc.practiceSystem.result;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "student",schema = "grade",catalog = "")
 public class StudentSatausResult {
     private int sId;
     private String studentId;
