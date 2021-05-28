@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public interface AdminDao extends JpaRepository<AdminEntity,Long>, JpaSpecificationExecutor<AdminEntity> {
 //  通过adminName查询管理员
@@ -46,19 +47,19 @@ public interface AdminDao extends JpaRepository<AdminEntity,Long>, JpaSpecificat
     void modifyTeacher(String teacherId,String teacherPasswd,String teacherName,int flag,int tId);
 
     @Modifying
-    @Query(value = "SELECT student.s_id,student.student_id,student.student_name,student.student_class,\n" +
-            "grade.teacher_id,student.student_teacher,student.student_workplace,\n" +
-            "student.student_Internship,student.strat_time,student.end_time,\n" +
-            "student.remark,grade.student_grade,grade.grade_time\n" +
-            "FROM student LEFT JOIN grade\n" +
-            "ON student.student_id = grade.student_id\n" +
-            "WHERE student.student_name LIKE \"%?%\"\n" +
+    @Query(value = "SELECT student.s_id,student.student_id,student.student_name,student.student_class," +
+            "grade.teacher_name,student.student_workplace," +
+            "student.student_Internship,student.strat_time,student.end_time," +
+            "student.remark,grade.student_grade,grade.grade_time " +
+            "FROM student LEFT JOIN grade " +
+            "ON student.student_id = grade.student_id " +
+            "WHERE student.student_name LIKE %?% " +
             "LIMIT ?,?",nativeQuery = true)
-    List<StudentSatausResult> listStudentStatus(String studentName, int start, int end);
+    List<Map<String, Object>>  listStudentStatus(String studentName, int start, int end);
 
-    @Modifying
-    @Query(value = "SELECT COUNT(1)\n" +
-            "FROM student LEFT JOIN grade\n" +
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM student LEFT JOIN grade " +
             "ON student.student_id = grade.student_id",nativeQuery = true)
     int countStudentStates();
 }

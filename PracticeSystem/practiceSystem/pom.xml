@@ -122,7 +122,7 @@
                 <version>2.4.2</version>
                 <configuration>
                     <mainClass>
-                        com.providerticket.ProviderTicketApplication
+                        cn.edu.zucc.practiceSystem.PracticeSystemApplication
                     </mainClass>
                 </configuration>
                 <executions>

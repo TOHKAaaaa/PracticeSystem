@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -77,10 +78,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<StudentSatausResult> listStudentStatus(String studentName, int index, int size) {
+    public List<Map<String,Object>> listStudentStatus(String studentName, int index, int size) {
         int start = index * size;
         int end = (index + 1) * size;
-        List<StudentSatausResult> result = adminDao.listStudentStatus(studentName,start,end);
+        List<Map<String,Object>> result = adminDao.listStudentStatus(studentName,start,end);
         return result;
     }
 
